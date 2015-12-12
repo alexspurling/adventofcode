@@ -1,10 +1,31 @@
-import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Char8 as BS
 import Crypto.Hash
+import Data.List
+import Data.Maybe
 
-md5 :: LB.ByteString -> Digest MD5
-md5 = hashlazy
+md5 :: BS.ByteString -> Digest MD5
+md5 = hash
 
 main = do
-    fileContent <- LB.readFile "advent3.txt"
-    let md5Digest = md5 fileContent
-    print $ digestToHexByteString md5Digest
+  let
+    message =
+      case getHashNumber of
+        Nothing -> "No hash value found."
+        Just x -> "Answer is: " ++ (show x)
+  putStrLn message
+
+getHashNumber :: Maybe Int
+getHashNumber =
+  findIndex hashMatches (map addKey [0..])
+
+addKey :: Int -> String
+addKey num =
+  "bgvyzdsv" ++ (show num)
+
+hashMatches :: String -> Bool
+hashMatches input =
+  let
+    md5BS = digestToHexByteString (md5 (BS.pack input))
+  in
+    md5BS < BS.pack "00001000000000000000000000000000"
+
