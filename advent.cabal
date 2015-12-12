@@ -1,0 +1,45 @@
+name:                advent
+version:             0.1.0.0
+synopsis:            Advent of Code in Haskell
+description:         Please see README.md
+homepage:            https://github.com/alexspurling/adventofcode
+license:             BSD3
+author:              Alex Spurling
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable advent1
+  hs-source-dirs:      src
+  main-is:             advent1.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+
+executable advent2
+  hs-source-dirs:      src
+  main-is:             advent2.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , regex-compat
+
+executable advent3
+  hs-source-dirs:      src
+  main-is:             advent3.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , containers
+
+executable advent3-improved
+  hs-source-dirs:      src
+  main-is:             advent3-improved.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , containers
+
+executable advent4
+  hs-source-dirs:      src
+  main-is:             advent4.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , cryptohash
+                     , bytestring
