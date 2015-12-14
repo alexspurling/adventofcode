@@ -27,5 +27,5 @@ hashMatches input =
   let
     md5BS = digestToHexByteString (md5 (BS.pack input))
   in
-    md5BS < BS.pack "00001000000000000000000000000000"
+    md5BS < BS.pack "00000100000000000000000000000000"
 
