@@ -1,3 +1,5 @@
+module Day2 where
+
 import qualified Text.Regex as R
 import qualified Data.List as L
 

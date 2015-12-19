@@ -1,52 +1,31 @@
 name:                advent
 version:             0.1.0.0
-synopsis:            Advent of Code in Haskell
+synopsis:            Advent of Code 2015 in Haskell
 description:         Please see README.md
 homepage:            https://github.com/alexspurling/adventofcode
 license:             BSD3
 author:              Alex Spurling
-category:            Web
 build-type:          Simple
 cabal-version:       >=1.10
 
---executable advent1
---  hs-source-dirs:      src
---  main-is:             advent1.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5
-
---executable advent2
---  hs-source-dirs:      src
---  main-is:             advent2.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5
---                     , regex-compat
-
---executable advent3
---  hs-source-dirs:      src
---  main-is:             advent3.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5
---                     , containers
-
---executable advent3-improved
---  hs-source-dirs:      src
---  main-is:             advent3-improved.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5
---                     , containers
-
---executable advent4
---  hs-source-dirs:      src
---  main-is:             advent4.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5
---                     , cryptohash
---                     , bytestring
-
-executable advent5
+library
+  exposed-modules:     Day1, Day2, Day3, Day4, Day5
   hs-source-dirs:      src
-  main-is:             advent5.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     , containers
                      , regex-compat
+                     , cryptohash
+                     , bytestring
+
+test-suite spectest
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  type:                exitcode-stdio-1.0
+  build-depends:       base >= 4.7 && < 5
+                     , advent
+                     , containers
+                     , hspec >= 1.3
+                     , bytestring >= 0.10.4.0
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language: Haskell2010

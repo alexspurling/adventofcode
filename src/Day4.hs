@@ -1,3 +1,5 @@
+module Day4 where
+
 import qualified Data.ByteString.Char8 as BS
 import Crypto.Hash
 import Data.List

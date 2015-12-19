@@ -1,3 +1,5 @@
+module Day1 where
+
 main = do
   input <- getLine
   let steps = stepsToFloor input 0 (-1) 0

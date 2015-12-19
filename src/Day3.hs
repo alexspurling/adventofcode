@@ -1,4 +1,6 @@
-import qualified Data.Map as M
+module Day3 where
+
+import qualified Data.Set as Set
 
 main = do
   input <- readFile "advent3.txt"
@@ -10,9 +12,9 @@ main = do
 getNumberOfHouses :: String -> Int
 getNumberOfHouses input =
   let
-    visitMap = visitHouses (0, 0) M.empty input
+    visits = visitHouses (0, 0) Set.empty input
   in
-    countVisits visitMap
+    countVisits visits
 
 getRoboNumberOfHouses :: String -> Int
 getRoboNumberOfHouses input =
@@ -21,23 +23,21 @@ getRoboNumberOfHouses input =
     santaDirections = each 2 input
     --Robo santa follows every even direction
     roboDirections = each 2 $ tail input
-    santaVisitMap = visitHouses (0, 0) M.empty santaDirections
-    roboSantaVisitMap = visitHouses (0, 0) santaVisitMap roboDirections
+    santaVisits = visitHouses (0, 0) Set.empty santaDirections
+    roboSantaVisits = visitHouses (0, 0) santaVisits roboDirections
   in
-    countVisits roboSantaVisitMap
+    countVisits roboSantaVisits
 
-type VisitMatrix = M.Map Int (M.Map Int Int)
+type VisitSet = Set.Set (Int,Int)
 
-visitHouses :: (Int, Int) -> VisitMatrix -> String -> VisitMatrix
-visitHouses position visitMap "" =
-  visitMap
+visitHouses :: (Int, Int) -> VisitSet -> String -> VisitSet
+visitHouses position visits "" =
+  visits
 
-visitHouses (x, y) visitMap (nextDirection:remainingDirections) =
+visitHouses (x, y) visits (nextDirection:remainingDirections) =
   let
-    --Increment the visit count in the current position
-    yMap = M.findWithDefault M.empty x visitMap :: M.Map Int Int
-    newYMap = M.insertWith (+) y 1 yMap
-    newVisitMap = M.insert x newYMap visitMap
+    --Mark this position as visited
+    newVisits = Set.insert (x, y) visits
     nextPosition =
       case nextDirection of
         '<' ->
@@ -49,11 +49,11 @@ visitHouses (x, y) visitMap (nextDirection:remainingDirections) =
         'v' ->
           (x, y+1)
   in
-    visitHouses nextPosition newVisitMap remainingDirections
+    visitHouses nextPosition newVisits remainingDirections
 
-countVisits :: VisitMatrix -> Int
-countVisits visitMap =
-  M.foldr (\m visitCount -> (M.size m + visitCount)) 0 visitMap
+countVisits :: VisitSet -> Int
+countVisits visits =
+  Set.size visits
 
 each :: Int -> [a] -> [a]
 each n = map head . takeWhile (not . null) . iterate (drop n)
