@@ -11,6 +11,12 @@ main = do
   putStrLn ("Requires " ++ (show totalArea) ++ " sq ft of wrapping paper")
   putStrLn ("Requires " ++ (show totalLength) ++ " ft of ribbon")
 
+totalArea :: String -> Int
+totalArea input = totalPaper (getPresents input)
+
+totalLength :: String -> Int
+totalLength input = totalRibbon (getPresents input)
+
 getPresents :: String -> [[Int]]
 getPresents input =
   map getDimensions (lines input)

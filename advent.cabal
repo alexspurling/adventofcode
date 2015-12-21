@@ -18,9 +18,9 @@ library
                      , cryptohash
                      , bytestring
 
-test-suite spectest
+test-suite adventtest
   hs-source-dirs:      test
-  main-is:             Spec.hs
+  main-is:             Main.hs
   type:                exitcode-stdio-1.0
   build-depends:       base >= 4.7 && < 5
                      , advent

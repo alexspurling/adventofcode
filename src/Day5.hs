@@ -11,6 +11,12 @@ main = do
   putStrLn ("There are " ++ (show niceCount) ++ " nice strings.")
   putStrLn ("There are " ++ (show niceCount2) ++ " nice strings with the new rules.")
 
+niceStrings input =
+  countNice input isNice
+
+niceStrings2 input =
+  countNice input isNice2
+
 countNice :: String -> (String -> Bool) -> Int
 countNice input niceFunction =
   length (filter niceFunction (lines input))
