@@ -2,13 +2,6 @@ module Day3 where
 
 import qualified Data.Set as Set
 
-main = do
-  input <- readFile "advent3.txt"
-  let numberOfHouses = getNumberOfHouses input
-  let roboNumberOfHouses = getRoboNumberOfHouses input
-  putStrLn ("Santa visited " ++ (show numberOfHouses) ++ " lucky people this year")
-  putStrLn ("Santa and robo santa visited " ++ (show roboNumberOfHouses) ++ " lucky people this year")
-
 getNumberOfHouses :: String -> Int
 getNumberOfHouses input =
   let

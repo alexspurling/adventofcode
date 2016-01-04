@@ -4,13 +4,6 @@ import Data.List
 import Data.Maybe
 import Text.Regex
 
-main = do
-  input <- readFile "advent5.txt"
-  let niceCount = countNice input isNice
-  let niceCount2 = countNice input isNice2
-  putStrLn ("There are " ++ (show niceCount) ++ " nice strings.")
-  putStrLn ("There are " ++ (show niceCount2) ++ " nice strings with the new rules.")
-
 niceStrings input =
   countNice input isNice
 

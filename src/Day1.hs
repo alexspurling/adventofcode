@@ -1,10 +1,5 @@
 module Day1 where
 
-main = do
-  input <- getLine
-  let steps = stepsToBasement input
-  putStrLn ("Requires " ++ (show steps) ++ " steps to get to the basement")
-
 stepsToBasement :: String -> Int
 stepsToBasement input = stepsToFloor input 0 (-1) 0
 

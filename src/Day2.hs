@@ -3,14 +3,6 @@ module Day2 where
 import qualified Text.Regex as R
 import qualified Data.List as L
 
-main = do
-  input <- readFile "advent2.txt"
-  let presents = getPresents input
-  let totalArea = totalPaper presents
-  let totalLength = totalRibbon presents
-  putStrLn ("Requires " ++ (show totalArea) ++ " sq ft of wrapping paper")
-  putStrLn ("Requires " ++ (show totalLength) ++ " ft of ribbon")
-
 totalArea :: String -> Int
 totalArea input = totalPaper (getPresents input)
 
