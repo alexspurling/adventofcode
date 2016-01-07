@@ -2,39 +2,17 @@
 
 module Day7 where
 
-import qualified Data.Map
-
--- This attoparsec module is intended for parsing text that is
--- represented using an 8-bit character set, e.g. ASCII or ISO-8859-15.
+import Data.Bits
 import Data.Attoparsec.ByteString.Char8
 import qualified Data.ByteString.Char8 as BS
 import Data.Word
 import Control.Applicative
-
-
-{--
--- | Type for IP's.
-data IP = IP Word8 Word8 Word8 Word8 deriving Show
-
-parseIP :: Parser IP
-parseIP = do
-  d1 <- decimal
-  char '.'
-  d2 <- decimal
-  char '.'
-  d3 <- decimal
-  char '.'
-  d4 <- decimal
-  return $ IP d1 d2 d3 d4
-
-main :: IO ()
-main = print $ parseOnly parseIP "131.45.68.123"
---}
+import qualified Data.Map as Map
 
 type Value = Word16
 type Variable = String
 type Target = Variable
-data Operand = IntOperand Value | StringOperand Variable deriving Show
+data Operand = ValueOperand Value | VariableOperand Variable deriving Show
 data Operator = Identity Operand
   | And Operand Operand
   | Or Operand Operand 
@@ -47,14 +25,14 @@ data Instruction = Instruction Operator Target deriving Show
 intOperand :: Parser Operand
 intOperand = do
   value <- decimal
-  return $ IntOperand value
+  return $ ValueOperand value
 
 word = many1 letter_ascii
 
 stringOperand :: Parser Operand
 stringOperand = do
   value <- word
-  return $ StringOperand value
+  return $ VariableOperand value
 
 operandParser :: Parser Operand
 operandParser = stringOperand <|> intOperand
@@ -111,5 +89,35 @@ parseInstructions :: String -> [Instruction]
 parseInstructions input =
   map parseInstruction (lines input)
 
+type SignalMap = Map.Map String Word16
+
+{--
+evaluateInstructions :: [Instruction] -> SignalMap
+evaluateInstructions instructions =
+  evaluateInstructions' instructions Map.empty
+
+evaluateInstructions' :: [Instruction] -> SignalMap -> SignalMap
+evaluateInstructions' instructions signalMap =
+  let
+    fullyEvaluatedInstructions = filter evaluated instructions
+  in
+    updateSignals fullyEvaluatedInstructions signalMap
+
+updateSignals :: [Instruction] -> SignalMap -> SignalMap
+updateSignals instructions signalMap =
+  foldr signalMap
+--}
+
+evaluateOperator :: Operator -> Value
+evaluateOperator operator =
+  case operator of
+    Identity (ValueOperand value) -> value
+    Not (ValueOperand value) -> complement value
+    And (ValueOperand value1) (ValueOperand value2) -> value1 .&. value2
+    Or (ValueOperand value1) (ValueOperand value2) -> value1 .|. value2
+    Lshift (ValueOperand value1) (ValueOperand value2) -> value1 `shift` (fromInteger (toInteger value2))
+    Rshift (ValueOperand value1) (ValueOperand value2) -> value1 `shift` (-(fromInteger (toInteger value2)))
+    _ -> error ("Could not evaluate operator: " ++ (show operator))
+
 valueOfA :: String -> String
-valueOfA input = show $ parseInstructions input
+valueOfA input = "foo"
