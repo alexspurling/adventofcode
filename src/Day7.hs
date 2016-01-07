@@ -33,15 +33,16 @@ main = print $ parseOnly parseIP "131.45.68.123"
 
 type Value = Word16
 type Variable = String
+type Target = Variable
 data Operand = IntOperand Value | StringOperand Variable deriving Show
-data Instruction = Identity Operand
+data Operator = Identity Operand
   | And Operand Operand
   | Or Operand Operand 
   | Lshift Operand Operand 
   | Rshift Operand Operand 
   | Not Operand
   deriving Show
-data Formula = Formula Instruction Operand deriving Show
+data Instruction = Instruction Operator Target deriving Show
 
 intOperand :: Parser Operand
 intOperand = do
@@ -67,60 +68,48 @@ identityParser = do
   param <- operandParser
   return $ Identity param
 
-andParser = do
+binaryParser :: BS.ByteString -> (Operand -> Operand -> Operator) -> Parser Operator
+binaryParser operatorString contructor = do
   param1 <- operandParser
-  string " AND "
+  string operatorString
   param2 <- operandParser
-  return $ And param1 param2
+  return $ contructor param1 param2
 
-orParser = do
-  param1 <- operandParser
-  string " OR "
-  param2 <- operandParser
-  return $ Or param1 param2
+andParser = binaryParser " AND " And
+orParser = binaryParser " OR " Or
+lshiftParser = binaryParser " LSHIFT " Lshift
+rshiftParser = binaryParser " RSHIFT " Rshift
 
-lshiftParser = do
-  param1 <- operandParser
-  string " LSHIFT "
-  param2 <- operandParser
-  return $ Lshift param1 param2
-
-rshiftParser = do
-  param1 <- operandParser
-  string " RSHIFT "
-  param2 <- operandParser
-  return $ Rshift param1 param2
-
-instructionParser :: Parser Instruction
-instructionParser = 
+operatorParser :: Parser Operator
+operatorParser = 
   notParser <|> andParser <|> orParser <|> lshiftParser <|> rshiftParser <|> identityParser
 
-formulaParser :: Parser Formula
-formulaParser = do
-  instruction <- instructionParser
+instructionParser :: Parser Instruction
+instructionParser = do
+  operator <- operatorParser
   string " -> "
-  target <- stringOperand
-  return $ Formula instruction target
+  target <- word
+  return $ Instruction operator target
+
+parseOperator :: String -> Operator
+parseOperator input =
+  case (parseOnly operatorParser (BS.pack input)) of
+    (Left unparsed) -> error ("Failed to parse: " ++ input)
+    (Right instruction) -> instruction
+
+parseOperators :: String -> [Operator]
+parseOperators input =
+  map parseOperator (lines input)
 
 parseInstruction :: String -> Instruction
 parseInstruction input =
   case (parseOnly instructionParser (BS.pack input)) of
     (Left unparsed) -> error ("Failed to parse: " ++ input)
-    (Right formula) -> formula
+    (Right instruction) -> instruction
 
 parseInstructions :: String -> [Instruction]
 parseInstructions input =
   map parseInstruction (lines input)
 
-parseFormula :: String -> Formula
-parseFormula input =
-  case (parseOnly formulaParser (BS.pack input)) of
-    (Left unparsed) -> error ("Failed to parse: " ++ input)
-    (Right formula) -> formula
-
-parseFormulas :: String -> [Formula]
-parseFormulas input =
-  map parseFormula (lines input)
-
 valueOfA :: String -> String
-valueOfA input = show $ parseFormulas input
+valueOfA input = show $ parseInstructions input
