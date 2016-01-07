@@ -7,6 +7,7 @@ import Day3Spec as Day3
 import Day4Spec as Day4
 import Day5Spec as Day5
 import Day6Spec as Day6
+import Day7Spec as Day7
 
 main :: IO ()
 main = 
@@ -17,6 +18,7 @@ main =
     day4 <- Day4.specIO
     day5 <- Day5.specIO
     day6 <- Day6.specIO
+    day7 <- Day7.specIO
     hspec $ do
       day1
       day2
@@ -24,3 +26,4 @@ main =
       day4
       day5
       day6
+      day7
