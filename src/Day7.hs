@@ -158,12 +158,28 @@ evaluateInstructions instructions signalMap =
   in
     evaluateInstructions newInstructionSet newSignalMap
 
+evaluateA :: SignalMap -> Word16
+evaluateA signalMap =
+  case Map.lookup "a" signalMap of
+    Just value -> value
+    Nothing -> error "Could not find value for signal a"
+
 valueOfA :: String -> Word16
 valueOfA input = 
   let
     instructions = parseInstructions input
     evaluatedSignals = evaluateInstructions instructions Map.empty
   in
-    case Map.lookup "a" evaluatedSignals of
-      Just value -> value
-      Nothing -> error "Could not find value for signal a"
+    evaluateA evaluatedSignals
+
+valueOfA2 :: String -> Word16
+valueOfA2 input = 
+  let
+    a = valueOfA input
+    instructions = parseInstructions input
+    instructionsWithoutB = filter (\(Instruction operator target) -> target /= "b") instructions
+    newBInstruction = Instruction (Identity (ValueOperand a)) "b"
+    newInstructions = instructionsWithoutB ++ [newBInstruction]
+    evaluatedSignals = evaluateInstructions newInstructions Map.empty
+  in
+    evaluateA evaluatedSignals
