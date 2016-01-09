@@ -89,24 +89,18 @@ parseInstructions :: String -> [Instruction]
 parseInstructions input =
   map parseInstruction (lines input)
 
-type SignalMap = Map.Map String Word16
+type SignalMap = Map.Map Variable Word16
 
-{--
-evaluateInstructions :: [Instruction] -> SignalMap
-evaluateInstructions instructions =
-  evaluateInstructions' instructions Map.empty
-
-evaluateInstructions' :: [Instruction] -> SignalMap -> SignalMap
-evaluateInstructions' instructions signalMap =
-  let
-    fullyEvaluatedInstructions = filter evaluated instructions
-  in
-    updateSignals fullyEvaluatedInstructions signalMap
-
-updateSignals :: [Instruction] -> SignalMap -> SignalMap
-updateSignals instructions signalMap =
-  foldr signalMap
---}
+isResolved :: Instruction -> Bool
+isResolved (Instruction operator target) =
+  case operator of
+    Identity (ValueOperand _) -> True
+    Not (ValueOperand _) -> True
+    And (ValueOperand _) (ValueOperand _) -> True
+    Or (ValueOperand _) (ValueOperand _) -> True
+    Lshift (ValueOperand _) (ValueOperand _) -> True
+    Rshift (ValueOperand _) (ValueOperand _) -> True
+    _ -> False
 
 evaluateOperator :: Operator -> Value
 evaluateOperator operator =
@@ -119,5 +113,57 @@ evaluateOperator operator =
     Rshift (ValueOperand value1) (ValueOperand value2) -> value1 `shift` (-(fromInteger (toInteger value2)))
     _ -> error ("Could not evaluate operator: " ++ (show operator))
 
-valueOfA :: String -> String
-valueOfA input = "foo"
+updateSignal :: Instruction -> SignalMap -> SignalMap
+updateSignal (Instruction operator target) signalMap =
+  Map.insert target (evaluateOperator operator) signalMap
+
+updateSignals :: [Instruction] -> SignalMap -> SignalMap
+updateSignals resolvedInstructions signalMap =
+  foldr updateSignal signalMap resolvedInstructions
+
+resolveOperand :: SignalMap -> Operand -> Operand
+resolveOperand signalMap operand =
+  case operand of
+    VariableOperand var ->  
+      case (Map.lookup var signalMap) of
+        Just value -> ValueOperand value
+        Nothing -> operand
+    _ -> operand
+
+updateInstruction :: SignalMap -> Instruction -> Instruction
+updateInstruction signalMap (Instruction operator target) =
+  let
+    newOperator = case operator of
+      Identity operand -> Identity (resolveOperand signalMap operand)
+      Not operand -> Not (resolveOperand signalMap operand)
+      And operand1 operand2 -> And (resolveOperand signalMap operand1) (resolveOperand signalMap operand2)
+      Or operand1 operand2 -> Or (resolveOperand signalMap operand1) (resolveOperand signalMap operand2)
+      Lshift operand1 operand2 -> Lshift (resolveOperand signalMap operand1) (resolveOperand signalMap operand2)
+      Rshift operand1 operand2 -> Rshift (resolveOperand signalMap operand1) (resolveOperand signalMap operand2)
+  in
+    Instruction newOperator target
+
+updateInstructions :: [Instruction] -> SignalMap -> [Instruction]
+updateInstructions unresolvedInstructions signalMap =
+  map (updateInstruction signalMap) unresolvedInstructions
+
+evaluateInstructions :: [Instruction] -> SignalMap -> SignalMap
+evaluateInstructions [] signalMap = signalMap
+evaluateInstructions instructions signalMap =
+  let 
+    resolved = filter isResolved instructions
+    unresolved = filter (not . isResolved) instructions
+    newSignalMap = updateSignals resolved signalMap
+    newInstructionSet = updateInstructions unresolved newSignalMap
+  in
+    evaluateInstructions newInstructionSet newSignalMap
+
+valueOfA :: String -> Word16
+valueOfA input = 
+  let
+    instructions = parseInstructions input
+    evaluatedSignals = evaluateInstructions instructions Map.empty
+  in
+    case Map.lookup "a" evaluatedSignals of
+      Just value -> value
+      Nothing -> error "Could not find value for signal a"

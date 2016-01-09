@@ -18,8 +18,8 @@ spec input =
       Day7.evaluateOperator (Lshift (ValueOperand 123) (ValueOperand 2)) `shouldBe` 492
     it "123 RShift 2 should be 30" $ do
       Day7.evaluateOperator (Rshift (ValueOperand 123) (ValueOperand 2)) `shouldBe` 30
-    it "Value of signal `a` is 1234." $ do
-      Day7.valueOfA input `shouldBe` "foo"
+    it "Value of signal `a` is 46065." $ do
+      Day7.valueOfA input `shouldBe` 46065
 
 specIO :: IO Spec
 specIO = do
