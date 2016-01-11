@@ -69,25 +69,14 @@ instructionParser = do
   target <- word
   return $ Instruction operator target
 
-parseOperator :: String -> Operator
-parseOperator input =
-  case (parseOnly operatorParser (BS.pack input)) of
-    (Left unparsed) -> error ("Failed to parse: " ++ input)
-    (Right instruction) -> instruction
-
-parseOperators :: String -> [Operator]
-parseOperators input =
-  map parseOperator (lines input)
-
-parseInstruction :: String -> Instruction
-parseInstruction input =
-  case (parseOnly instructionParser (BS.pack input)) of
-    (Left unparsed) -> error ("Failed to parse: " ++ input)
-    (Right instruction) -> instruction
+instructionsParser :: Parser [Instruction]
+instructionsParser = many (instructionParser <* endOfLine)
 
 parseInstructions :: String -> [Instruction]
 parseInstructions input =
-  map parseInstruction (lines input)
+  case (parseOnly instructionsParser (BS.pack input)) of
+    (Left unparsed) -> error ("Failed to parse: " ++ input)
+    (Right instructions) -> instructions
 
 type SignalMap = Map.Map Variable Word16
 
