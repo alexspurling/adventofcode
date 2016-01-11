@@ -6,8 +6,8 @@ import Day8
 spec :: String -> Spec
 spec input =
   describe "Day8" $ do
-    it "Character size difference should be 123" $ do
-      Day8.characterDifference input `shouldBe` 123
+    it "Character size difference should be 1333" $ do
+      Day8.characterDifference input `shouldBe` 1333
 
 specIO :: IO Spec
 specIO = do
