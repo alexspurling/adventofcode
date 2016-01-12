@@ -34,16 +34,39 @@ stringChar = escapedQuote <|> escapedBackslash <|> escapedHex <|> anyChar
 stringParser :: Parser String
 stringParser = char '"' *> manyTill stringChar (char '"')
 
-memoryLengthLine :: String -> Int
-memoryLengthLine line =
-  case parseOnly stringParser (BS.pack line) of
-    Left unparsed -> error ("Failed to parse: " ++ line ++ ". Error: " ++ unparsed)
-    Right parsed -> length parsed
+inputParser :: Parser [String]
+inputParser = many (stringParser <* endOfLine)
 
-memoryLength :: String -> Int
-memoryLength input = 
-  sum (map memoryLengthLine (lines input))
+parseInput :: String -> [String]
+parseInput input =
+  case parseOnly inputParser (BS.pack input) of
+      Left unparsed -> error ("Failed to parse input. Error: " ++ unparsed)
+      Right parsed -> parsed
+
+memoryLength :: [String] -> Int
+memoryLength strings =
+  sum (map length strings)
 
 characterDifference :: String -> Int
 characterDifference input =
-  codeLength input - memoryLength input
+  codeLength input - memoryLength (parseInput input)
+
+encodeString :: String -> String
+encodeString input =
+  "\"" ++ (concat (map encode input)) ++ "\"" 
+  where
+    encode '\\' = "\\\\"
+    encode '\"' = "\\\""
+    encode a = [a]
+
+encodedStrings :: [String] -> [String]
+encodedStrings strings =
+  map encodeString strings
+
+encodedLength :: [String] -> Int
+encodedLength strings =
+  sum (map length (encodedStrings strings))
+
+encodedDifference :: String -> Int
+encodedDifference input =
+  encodedLength (lines input) - codeLength input
