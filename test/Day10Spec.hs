@@ -12,5 +12,4 @@ spec =
       Day10.lookAndSayLength "1113222113" 50 `shouldBe` 3579328
 
 specIO :: IO Spec
-specIO = do
-  return spec
+specIO = return spec

@@ -12,5 +12,4 @@ spec =
       Day11.nextValidPassword "vzbxxyzz" `shouldBe` "vzcaabcc"
 
 specIO :: IO Spec
-specIO = do
-  return spec
+specIO = return spec
