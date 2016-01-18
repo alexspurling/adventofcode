@@ -23,3 +23,7 @@ advanceFloor char =
     '(' -> 1
     ')' -> -1
     _ -> 0
+
+advanceToFloor :: String -> Int
+advanceToFloor input =
+  sum $ map advanceFloor input
