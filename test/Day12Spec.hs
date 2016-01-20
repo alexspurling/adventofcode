@@ -7,7 +7,9 @@ spec :: String -> Spec
 spec input =
   describe "Day12" $ do
     it "Sum of all numbers is 191164" $ do
-      Day12.sumOfNumbers input `shouldBe` 191164
+      Day12.sumOfAllNumbers input `shouldBe` 191164
+    it "Sum of all numbers except red ones is 87842" $ do
+      Day12.sumOfNonRedNumbers input `shouldBe` 87842
 
 specIO :: IO Spec
 specIO = do
