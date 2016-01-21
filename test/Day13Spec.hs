@@ -8,7 +8,7 @@ spec =
   describe "Day13" $ do
     it "Maximum guest happiness is 664" $ do
       Day13.maximumGuestHappiness `shouldBe` 664
-    it "Maximum guest happiness including me is 640" $ do
+    it "Maximum guest happiness including mei s 640" $ do
       Day13.maximumGuestHappinessIncludingMe `shouldBe` 640
 
 specIO :: IO Spec
